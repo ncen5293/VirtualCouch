@@ -1,0 +1,150 @@
+.left-projects-button {
+  border-style: solid;
+  border-width: 1vh;
+  border-top: 3vh solid transparent;
+  border-bottom: 3vh solid transparent;
+  border-top-right-radius: 6.66vh;
+  border-bottom-right-radius: 6.66vh;
+  border-top-left-radius: .75vh;
+  border-bottom-left-radius: .75vh;
+  width: 18vh;
+  height: 13vh;
+}
+
+.right-projects-button {
+  border-style: solid;
+  border-width: 1vh;
+  border-top: 3vh solid transparent;
+  border-bottom: 3vh solid transparent;
+  border-top-left-radius: 6.66vh;
+  border-bottom-left-radius: 6.66vh;
+  border-top-right-radius: .75vh;
+  border-bottom-right-radius: .75vh;
+  width: 18vh;
+  height: 13vh;
+}
+
+.inner-projects-button {
+  margin-left: -15vh;
+  font-size: 3vh;
+  text-align: left;
+}
+
+.right-inner-projects-button {
+  margin-right: -15vh;
+  font-size: 3vh;
+  text-align: right;
+}
+
+.top-left {
+  transform: rotate(19deg);
+  margin-bottom: -3.2vh;
+  border-left: 18vh solid #ED4C67;
+  border-right: solid #ED4C67;
+}
+
+.top-right {
+  transform: rotate(-19deg);
+  margin-bottom: -3.2vh;
+  border-right: 18vh solid #44bd32;
+  border-left: solid #44bd32;
+}
+
+.top-left:hover {
+  cursor: pointer;
+  transform: scale3d(1.1, 1.1, 1.1) rotate(19deg);
+}
+
+.top-right:hover {
+  cursor: pointer;
+  transform: scale3d(1.1, 1.1, 1.1) rotate(-19deg);
+}
+
+.middle-left {
+  border-left: 18vh solid #1289A7;
+  border-right: solid #1289A7;
+  transform: rotate(0deg);
+}
+
+.middle-right {
+  border-right: 18vh solid #182C61;
+  border-left: solid #182C61;
+  transform: rotate(0deg);
+}
+
+.middle-left:hover {
+  cursor: pointer;
+  transform: scale3d(1.1, 1.1, 1.1);
+}
+
+.middle-right:hover {
+  cursor: pointer;
+  transform: scale3d(1.1, 1.1, 1.1);
+}
+
+.bottom-left {
+  border-left: 18vh solid #FFC312;
+  border-right: solid #FFC312;
+  transform: rotate(-19deg);
+  margin-top: -3.2vh;
+}
+
+.bottom-right {
+  border-right: 18vh solid #B33771;
+  border-left: solid #B33771;
+  transform: rotate(19deg);
+  margin-top: -3.2vh;
+}
+
+.bottom-left:hover {
+  cursor: pointer;
+  transform: scale3d(1.1, 1.1, 1.1) rotate(-19deg);
+}
+
+.bottom-right:hover {
+  cursor: pointer;
+  transform: scale3d(1.1, 1.1, 1.1) rotate(19deg);
+}
+
+.profile-pic {
+  position: fixed;
+  width: 30vh;
+  margin: auto;
+  left: 0;
+  right: 0;
+  z-index: 0;
+}
+
+.nav-button {
+  display: inline-block;
+  position: static;
+}
+
+.right-modal-button{
+  float: right;
+}
+
+.like-popup {
+  position: fixed;
+  margin: auto;
+}
+
+.home-buttons {
+  border-top: 2vh solid #282c34;
+}
+
+@media only screen and (max-width: 750px) {
+  .left-projects-button {
+    margin-right: 7vh;
+  }
+}
+
+@media only screen and (min-width: 751px) {
+  .left-projects-button {
+    margin-right: 10vh;
+  }
+
+  .right-projects-button {
+    margin-left: 10vh;
+  }
+}
