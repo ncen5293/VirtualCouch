@@ -5,7 +5,7 @@ const mapStateToProps = state => {
   return { articles: state.articles };
 };
 
-const ConnectedList = ({ articles }) => (
+const List = ({ articles }) => (
   <ul>
     {articles.map(el => (
       <li key={el.id}>{el.title}</li>
@@ -13,6 +13,4 @@ const ConnectedList = ({ articles }) => (
   </ul>
 );
 
-const List = connect(mapStateToProps)(ConnectedList);
-
-export default List;
+export default connect(mapStateToProps)(List);

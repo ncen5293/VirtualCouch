@@ -1,0 +1,103 @@
+.group-box {
+  background-color: white;
+  color: black;
+}
+
+.player-list {
+  overflow-y: scroll;
+  width: 100%;
+}
+
+.chat-input {
+  height: auto;
+}
+
+.server-list {
+  overflow-y: scroll;
+}
+
+.server-browser {
+  background-color: silver;
+}
+
+.chat-list {
+  text-align: center;
+}
+
+.video-buttons .video-button-usage {
+  visibility: hidden;
+  margin-top: 25px;
+  margin-left: -25px;
+  position: absolute;
+}
+
+.video-buttons:hover .video-button-usage {
+  visibility: visible;
+}
+
+@media only screen and (min-width: 1025px) {
+  .group-box {
+    margin-left: 1%;
+    width: 15%;
+    height: 88%;
+    position: fixed;
+    font-size: small;
+  }
+
+  .list-buttons {
+    height: 7%;
+  }
+
+  .player-list {
+    height: 87%;
+  }
+
+  .chat-input {
+    margin-top: 3%;
+  }
+
+  .server-browser {
+    position: fixed;
+    width: 75%;
+    margin-left: 20%;
+    height: 88%;
+    font-size: small;
+  }
+
+  .server-filter {
+    height: 60px;
+    font-size: medium;
+  }
+
+  .server-list {
+    height: calc(100% - 60px);
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .group-box {
+    height: 50%;
+    width: 100%;
+  }
+
+  .player-list {
+    height: 25vh;
+  }
+
+  .chat-input {
+    font-size: small;
+  }
+
+  .server-browser {
+    height: 45vh;
+    margin-bottom: 5px;
+  }
+
+  .server-filter {
+    height: 60px;
+  }
+
+  .server-list {
+    height: calc(100% - 60px);
+  }
+}

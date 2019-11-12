@@ -1,0 +1,21 @@
+.centered-form {
+  position: fixed;
+  margin: auto;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  top: calc(50% - 221px/2);
+  /*221px is the height of the form told by chrome*/
+}
+
+@media only screen and (max-width: 750px) {
+  .centered-form {
+
+  }
+}
+
+@media only screen and (min-width: 751px) {
+  .centered-form {
+    width: 50%;
+  }
+}

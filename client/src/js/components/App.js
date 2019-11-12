@@ -1,23 +1,18 @@
-import React from "react";
-import List from "./List";
-import Form from "./Form";
-import Post from "./Posts";
+import React, { Component } from 'react';
+import { BrowserRouter, Route } from "react-router-dom";
+import Home from './Home';
+import '../styles/App.css';
 
-const App = () => (
-  <>
-    <div>
-      <h2>Articles</h2>
-      <List />
-    </div>
-    <div>
-      <h2>Add a new article</h2>
-      <Form />
-    </div>
-    <div>
-      <h2>API posts</h2>
-      <Post />
-    </div>
-  </>
-);
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <BrowserRouter>
+          <Route exact path = "/" component = {Home} />
+        </BrowserRouter>
+      </div>
+    );
+  }
+}
 
 export default App;
