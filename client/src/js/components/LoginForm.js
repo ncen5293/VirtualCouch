@@ -10,41 +10,69 @@ class LoginForm extends Component {
     if (error) {
       errorMessage = <Message
                        error
-                       header='Unable to login/signup'
+                       header={`Unable to ${this.props.tab}`}
                        content={errorReason}
                      />
     }
-    return (
-      <div className='centered-form'>
-        <Segment raised>
-          <Header as='h2'>Login / Register</Header>
-          {errorMessage}
-          <Form onSubmit={this.props.handleSubmit}>
-            <Form.Input
-              placeholder='E-mail'
-              id='email'
-              value={this.props.email}
-              onChange={this.props.handleChange}
-            />
-            <Form.Input
-              placeholder='Username (at least 5 characters)'
-              id='user'
-              value={this.props.user}
-              onChange={this.props.handleChange}
-            />
-            <Form.Input
-              type='password'
-              placeholder='Password (at least 5 characters)'
-              id='password'
-              value={this.props.password}
-              onChange={this.props.handleChange}
-            />
-            <Button color='google plus' onClick={this.props.registerSubmit}>Sign-up</Button>
-            <Button primary type='submit'>Log-in</Button>
-          </Form>
-        </Segment>
-      </div>
-    )
+    if (this.props.tab === 'Log-In') {
+      return (
+        <div className='centered-form'>
+          <Segment raised>
+            <Header as='h2'>Login / Register</Header>
+            {errorMessage}
+            <Form>
+              <Form.Input
+                placeholder='E-mail'
+                id='email'
+                value={this.props.email}
+                onChange={this.props.handleChange}
+              />
+              <Form.Input
+                type='password'
+                placeholder='Password (at least 5 characters)'
+                id='password'
+                value={this.props.password}
+                onChange={this.props.handleChange}
+              />
+              <Button basic onClick={this.props.changeTab}>Sign-Up</Button>
+              <Button primary onClick={this.props.handleSubmit}>Log-In</Button>
+            </Form>
+          </Segment>
+        </div>
+      )
+    } else {
+      return (
+        <div className='centered-form'>
+          <Segment raised>
+            <Header as='h2'>Login / Register</Header>
+            {errorMessage}
+            <Form>
+              <Form.Input
+                placeholder='E-mail'
+                id='email'
+                value={this.props.email}
+                onChange={this.props.handleChange}
+              />
+              <Form.Input
+                placeholder='Username (at least 5 characters)'
+                id='user'
+                value={this.props.user}
+                onChange={this.props.handleChange}
+              />
+              <Form.Input
+                type='password'
+                placeholder='Password (at least 5 characters)'
+                id='password'
+                value={this.props.password}
+                onChange={this.props.handleChange}
+              />
+              <Button basic onClick={this.props.changeTab}>Log-In</Button>
+              <Button primary onClick={this.props.registerSubmit}>Sign-Up</Button>
+            </Form>
+          </Segment>
+        </div>
+      )
+    }
   }
 }
 

@@ -13,7 +13,8 @@ class Home extends Component {
       user: '',
       password: '',
       error: false,
-      errorReason: ''
+      errorReason: '',
+      tab: 'Log-In'
     }
   }
 
@@ -24,19 +25,55 @@ class Home extends Component {
   }
 
   handleSubmit = (event) => {
-    this.setState({
-      email: '',
-      user: '',
-      password: ''
-    });
+    const email = this.state.email;
+    const user = this.state.user;
+    const password = this.state.password;
+    axios.get('http://localhost:8080/users/user', {params: { email, password }})
+      .then(res => {
+        if (res.data.exists) {
+          this.loginRedirect();
+        } else {
+          this.setState({ error: true, errorReason: 'This account doesn\'t exist!' });
+        }
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
   registerSubmit = (event) => {
-    this.setState({
-      email: '',
-      user: '',
-      password: ''
-    });
+    const email = this.state.email;
+    const user = this.state.user;
+    const password = this.state.password;
+    if (user.length < 5) {
+      this.setState({ error: true, errorReason: 'The username is too short!' });
+    } else if (password.length < 5) {
+      this.setState({ error: true, errorReason: 'The password is too short!' });
+    } else {
+      axios.post('http://localhost:8080/users/user', { email, user, password })
+        .then(res => {
+          if (res.data.error) {
+            this.setState({ error: true, errorReason: 'E-mail or username is already in use!' });
+          } else {
+            this.loginRedirect();
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
+  }
+
+  loginRedirect = () => {
+    //put data into redux
+    this.props.history.push('/watch');
+  }
+
+  changeTab = (event) => {
+    this.setState(state => ({
+        tab: state.tab === 'Log-In' ? 'Sign-Up' : 'Log-In',
+        error: false
+      }));
   }
 
   render() {
@@ -59,6 +96,8 @@ class Home extends Component {
           email={this.state.email}
           user={this.state.user}
           password={this.state.password}
+          tab={this.state.tab}
+          changeTab={this.changeTab}
         />
       </div>
     )

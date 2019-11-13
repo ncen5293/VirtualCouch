@@ -2,7 +2,10 @@ import { ADD_ARTICLE, DATA_LOADED } from "../constants/action-types";
 
 const initialState = {
   articles: [],
-  remoteArticles: []
+  remoteArticles: [],
+  loggedIn: false,
+  username: '',
+  currentRoom: 0
 };
 
 const rootReducer = (state = initialState, action) => {
