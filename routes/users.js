@@ -48,7 +48,7 @@ router.post("/user", (req,res) => {
             console.log(err);
           }
         });
-        res.send({ newUser, error: false });
+        res.send({ username: newUser.username, error: false });
       } else {
         res.send({ error: true });
       }
@@ -64,7 +64,7 @@ router.get("/user", (req,res) => {
       if (!user || (user && user.password !== req.query.password)) {
         res.send({ exists: false });
       } else if (user && user.password === req.query.password) {
-        res.send({ user, exists: true });
+        res.send({ username: user.username, exists: true });
       }
   });
 })

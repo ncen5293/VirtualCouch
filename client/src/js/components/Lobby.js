@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import socketIOClient from 'socket.io-client';
 import { connect } from "react-redux";
+import { getUsers, getMessage, getLocalMessage } from "../actions/Index";
 import { Icon, Menu, Button } from 'semantic-ui-react';
 import axios from 'axios';
 import YouTube from 'react-youtube';
@@ -9,19 +10,29 @@ import Searchbar from './Searchbar';
 import '../styles/Watch.css';
 
 const mapStateToProps = (state) => {
-  return { roomId: state.roomId };
+  return {
+    lobbyList: state.lobbyList,
+    players: state.players,
+    messages: state.messages,
+    localMessages: state.localMessages
+  };
 };
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getUsers: players => dispatch(getUsers(players)),
+    getMessage: messages => dispatch(getMessage(messages)),
+    getLocalMessage: localMessages => dispatch(getLocalMessage(localMessages))
+  };
+}
 
 class Lobby extends Component {
   constructor(props) {
     super(props);
     this.state = {
       lobby: {},
-      players: [],
       chatType: 'chat',
       chatInput: '',
-      messages: [],
-      localMessages: [],
       searchValue: '',
       videoIds: [],
       startTime: 0,
@@ -32,21 +43,15 @@ class Lobby extends Component {
 
     this.socket.on('updateRoom', (roomInfo) => {
       if (roomInfo.roomName !== 'world' && roomInfo.players) {
-        this.setState((prevState) => ({
-          players: roomInfo.players
-        }));
+        this.props.getUsers(roomInfo.players);
       }
     });
 
     this.socket.on('chatMessage', (message) => {
       if (message.where === 'world') {
-        this.setState((prevState) => ({
-          messages: prevState.messages.concat(message)
-        }));
+        this.props.getMessage(message);
       } else {
-        this.setState((prevState) => ({
-          localMessages: prevState.localMessages.concat(message)
-        }));
+        this.props.getLocalMessage(message);
       }
       this.scrollToBottom();
     })
@@ -112,7 +117,7 @@ class Lobby extends Component {
   }
 
   componentDidMount = () => {
-    if (this.props.roomId > 0) {
+    if (localStorage.getItem('roomId') === this.props.match.params.roomId) {
       this.joinLobby();
       this.setVideoPlayerMessage('!help for all commands', 'System', '');
     } else {
@@ -148,11 +153,11 @@ class Lobby extends Component {
 
   joinChatLobby = () => {
     const globalInfo = {
-      screenName: localStorage.getItem('screenName'),
+      screenName: localStorage.getItem('username'),
       roomName: 'world'
     }
     const joinInfo = {
-      screenName: localStorage.getItem('screenName'),
+      screenName: localStorage.getItem('username'),
       roomName: this.props.match.params.roomId
     }
     this.socket.emit('joinRoom', (globalInfo));
@@ -479,14 +484,14 @@ class Lobby extends Component {
           />
         </div>
         <PlayerList
-          players={this.state.players}
+          players={this.props.players}
           toggleChat={this.toggleChat}
           chatType={this.state.chatType}
           chatMessage={this.chatMessage}
           onChange={this.onChange}
           chatInput={this.state.chatInput}
-          messages={this.state.messages}
-          localMessages={this.state.localMessages}
+          messages={this.props.messages}
+          localMessages={this.props.localMessages}
           inLobby={true}
         />
       </div>
@@ -494,4 +499,4 @@ class Lobby extends Component {
   }
 }
 
-export default connect(mapStateToProps)(Lobby);
+export default connect(mapStateToProps, mapDispatchToProps)(Lobby);

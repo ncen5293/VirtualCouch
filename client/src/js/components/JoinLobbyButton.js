@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { connect } from "react-redux";
-import { setRoom } from "../actions/Index";
 import { Modal, Button, Input, Message } from 'semantic-ui-react';
 import '../styles/Watch.css';
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setRoom: roomId => dispatch(setRoom(roomId))
-  };
-}
 
 class JoinLobbyButton extends Component {
   constructor(props) {
@@ -62,9 +54,8 @@ class JoinLobbyButton extends Component {
   }
 
   roomRedirect = (lobby) => {
-    const roomId = lobby.RoomId;
-    this.props.setRoom(roomId);
-    this.props.history.push(`/watch/${roomId}`);
+    localStorage.setItem('roomId', lobby.RoomId);
+    this.props.history.push(`/watch/${lobby.RoomId}`);
   }
 
   render() {
@@ -106,4 +97,4 @@ class JoinLobbyButton extends Component {
   }
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(JoinLobbyButton));
+export default withRouter(JoinLobbyButton);

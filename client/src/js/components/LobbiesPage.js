@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 import socketIOClient from 'socket.io-client';
 import { connect } from "react-redux";
-import { setRoom } from "../actions/Index";
-import { Icon, Menu, Button } from 'semantic-ui-react';
+import { getRooms, getUsers, getMessage } from "../actions/Index";
+import { Menu, Button } from 'semantic-ui-react';
 import axios from 'axios';
 import ServerBrowser from './ServerBrowser';
 import PlayerList from './PlayerList';
 import '../styles/Watch.css';
 
 const mapStateToProps = (state) => {
-  return { username: state.username };
+  return {
+    lobbyList: state.lobbyList,
+    players: state.players,
+    messages: state.messages
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setRoom: roomId => dispatch(setRoom(roomId))
+    getRooms: lobbyList => dispatch(getRooms(lobbyList)),
+    getUsers: players => dispatch(getUsers(players)),
+    getMessage: messages => dispatch(getMessage(messages))
   };
 }
 
@@ -22,9 +28,6 @@ class LobbiesPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      players: [],
-      messages: [],
-      lobbyList: [],
       badInfo: false,
       badDesc: '',
       chatType: 'global',
@@ -39,41 +42,27 @@ class LobbiesPage extends Component {
     this.socket = socketIOClient('http://localhost:8080');
 
     this.socket.on('updateRoom', (roomInfo) => {
-      this.setState((prevState) => ({
-        players: roomInfo.players
-      }));
+      this.props.getUsers(roomInfo.players);
     });
 
     this.socket.on('chatMessage', (message) => {
-      this.setState((prevState) => ({
-        messages: prevState.messages.concat(message)
-      }));
+      this.props.getMessage(message);
       this.scrollToBottom();
     })
 
     this.socket.on('updateLobbyList', () => {
-      this.getLobbies();
+      this.props.getRooms();
     })
-  }
-
-  getLobbies = async () => {
-    await axios.get('http://localhost:8080/lobbys/lobby', {params: { roomId: '' }})
-      .then(res => {
-        this.setState({ lobbyList: res.data.lobbies });
-      })
-      .catch(error => {
-        console.error(error)
-      })
   }
 
   componentDidMount = () => {
     const joinInfo = {
-      screenName: this.props.username,
+      screenName: localStorage.getItem('username'),
       roomName: 'world'
     }
     this.socket.emit('joinRoom', (joinInfo));
     window.setTimeout(() => {
-      this.getLobbies();
+      this.props.getRooms();
     }, 10);
   }
 
@@ -141,7 +130,6 @@ class LobbiesPage extends Component {
   }
 
   render() {
-    const username = this.props.username;
     return (
       <div className='App-header browser-page'>
         <Menu widths={3}>
@@ -150,7 +138,7 @@ class LobbiesPage extends Component {
           </Menu.Item>
           <Menu.Item>
             <h2>
-              Welcome {username}
+              Welcome {localStorage.getItem('username')}
             </h2>
           </Menu.Item>
           <Menu.Item>
@@ -158,7 +146,7 @@ class LobbiesPage extends Component {
           </Menu.Item>
         </Menu>
         <ServerBrowser
-          lobbyList={this.state.lobbyList}
+          lobbyList={this.props.lobbyList}
           filterInput={this.state.filterInput}
           onChange={this.onChange}
           onLobbyCreateToggle={this.onLobbyCreateToggle}
@@ -166,13 +154,13 @@ class LobbiesPage extends Component {
           onSubmitLobby={this.onSubmitLobby}
         />
         <PlayerList
-          players={this.state.players}
+          players={this.props.players}
           toggleChat={this.toggleChat}
           chatType={this.state.chatType}
           chatMessage={this.chatMessage}
           onChange={this.onChange}
           chatInput={this.state.chatInput}
-          messages={this.state.messages}
+          messages={this.props.messages}
           inLobby={false}
         />
       </div>
@@ -180,4 +168,7 @@ class LobbiesPage extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LobbiesPage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LobbiesPage);

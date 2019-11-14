@@ -11,7 +11,7 @@ class PlayerList extends Component {
     }
     if (this.props.chatType === 'players') {
       const playerList = this.props.players.map((player, i) => {
-        let user = localStorage.getItem('screenName') === player ? <b>{player}</b> : player;
+        let user = localStorage.getItem('username') === player ? <b>{player}</b> : player;
         return (<List.Item key={i}>
                   <List.Content>{user}</List.Content>
                 </List.Item>)

@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from "react-redux";
-import { storeUser } from "../actions/Index";
 import axios from 'axios';
 import { Message, Segment, Header } from 'semantic-ui-react';
 import LoginForm from './LoginForm';
 import '../styles/Home.css';
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    storeUser: username => dispatch(storeUser(username))
-  };
-}
 
 class Home extends Component {
   constructor(props) {
@@ -37,7 +29,7 @@ class Home extends Component {
     axios.get('http://localhost:8080/users/user', {params: { email, password }})
       .then(res => {
         if (res.data.exists) {
-          this.loginRedirect();
+          this.loginRedirect(res.data.username);
         } else {
           this.setState({ error: true, errorReason: 'This account doesn\'t exist!' });
         }
@@ -61,7 +53,7 @@ class Home extends Component {
           if (res.data.error) {
             this.setState({ error: true, errorReason: 'E-mail or username is already in use!' });
           } else {
-            this.loginRedirect();
+            this.loginRedirect(res.data.username);
           }
         })
         .catch(error => {
@@ -70,9 +62,8 @@ class Home extends Component {
     }
   }
 
-  loginRedirect = () => {
-    const username = this.state.user;
-    this.props.storeUser({ username });
+  loginRedirect = (user) => {
+    localStorage.setItem('username', user);
     this.props.history.push('/watch');
   }
 
@@ -111,4 +102,4 @@ class Home extends Component {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Home);
+export default Home;
