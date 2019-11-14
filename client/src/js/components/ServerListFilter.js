@@ -13,9 +13,9 @@ class ServerListFilter extends Component {
               size='mini'
               icon='search'
               placeholder='Filter'
-              onKeyPress={this.props.onFilterKeyPress}
-              onChange={this.props.onFilterChange}
+              onChange={this.props.onChange}
               value={this.props.filterInput}
+              name='filterInput'
               style={{'width': '90%'}}
             />
           </Menu.Item>
@@ -29,8 +29,7 @@ class ServerListFilter extends Component {
           </Menu.Item>
           <Menu.Item>
             <CreateLobby
-              onLobbyNameChange={this.props.onLobbyNameChange}
-              onPasswordChange={this.props.onPasswordChange}
+              onChange={this.props.onChange}
               onLobbyCreateToggle={this.props.onLobbyCreateToggle}
               onSubmitLobby={this.props.onSubmitLobby}
               isOpen={this.props.isCreateLobbyOpen}

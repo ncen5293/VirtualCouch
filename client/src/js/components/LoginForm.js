@@ -18,10 +18,11 @@ class LoginForm extends Component {
       return (
         <div className='centered-form'>
           <Segment raised>
-            <Header as='h2'>Login / Register</Header>
+            <Header as='h2'>Log-In</Header>
             {errorMessage}
             <Form>
               <Form.Input
+                type='email'
                 placeholder='E-mail'
                 id='email'
                 value={this.props.email}
@@ -29,7 +30,7 @@ class LoginForm extends Component {
               />
               <Form.Input
                 type='password'
-                placeholder='Password (at least 5 characters)'
+                placeholder='Password'
                 id='password'
                 value={this.props.password}
                 onChange={this.props.handleChange}
@@ -44,10 +45,11 @@ class LoginForm extends Component {
       return (
         <div className='centered-form'>
           <Segment raised>
-            <Header as='h2'>Login / Register</Header>
+            <Header as='h2'>Register</Header>
             {errorMessage}
             <Form>
               <Form.Input
+                type='email'
                 placeholder='E-mail'
                 id='email'
                 value={this.props.email}

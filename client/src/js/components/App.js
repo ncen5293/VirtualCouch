@@ -13,6 +13,7 @@ class App extends Component {
           <Route exact path = "/" component = {Home} />
           <Route exact path = "/watch" component = {LobbiesPage} />
           <Route exact path = "/watch/:roomId" component = {Lobby} />
+          <Route exact path = "/profile" component = {Home} />
         </BrowserRouter>
       </div>
     );

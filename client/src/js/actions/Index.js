@@ -1,7 +1,11 @@
-import { ADD_ARTICLE, STORE_USER } from "../constants/action-types";
+import { ADD_ARTICLE, STORE_USER, SET_ROOM } from "../constants/action-types";
 
 export const storeUser = (payload) => {
   return { type: 'STORE_USER', payload };
+}
+
+export const setRoom = (payload) => {
+  return { type: 'SET_ROOM', payload };
 }
 
 export const addArticle = (payload) => {

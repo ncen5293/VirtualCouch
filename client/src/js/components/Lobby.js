@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import socketIOClient from 'socket.io-client';
+import { connect } from "react-redux";
 import { Icon, Menu, Button } from 'semantic-ui-react';
 import axios from 'axios';
 import YouTube from 'react-youtube';
 import PlayerList from './PlayerList';
 import Searchbar from './Searchbar';
 import '../styles/Watch.css';
+
+const mapStateToProps = (state) => {
+  return { roomId: state.roomId };
+};
 
 class Lobby extends Component {
   constructor(props) {
@@ -106,71 +111,13 @@ class Lobby extends Component {
       })
   }
 
-  scrollToBottom = () => {
-    let scrollElement = document.getElementsByClassName("chat-list");
-    if (scrollElement[0]) {
-      scrollElement[0].scrollTop = scrollElement[0].scrollHeight;
-    }
-  }
-
   componentDidMount = () => {
-    this.joinLobby();
-    this.setVideoPlayerMessage('!help for all commands', 'System', '');
-  }
-
-  getSearchData = (searchValue) => {
-    const KEY = 'AIzaSyD2yIRUZp5tQxt8o06cIRuGgKTJbNksNjA';
-    axios.get('https://www.googleapis.com/youtube/v3/search', {
-      params: {
-          q: searchValue,
-          part: 'snippet',
-          maxResults: 1,
-          key: KEY
-      }
-    })
-    .then(res => {
-      if (res.data.items[0] !== null) {
-        this.setYoutubeData(res.data.items[0].id.videoId);
-      } else {
-        this.setVideoPlayerMessage('Try searching for something else!', 'No Videos Found', '');
-      }
-    })
-  }
-
-  setYoutubeData = (videoId) => {
-    axios.post('http://localhost:8080/lobbys/video', { roomId: this.props.match.params.roomId, videoId: videoId })
-      .then(res => {
-        this.socket.emit('getYoutubeData');
-        this.queuedVideoMessage(videoId);
-      })
-      .catch(error => {
-        console.error(error)
-      })
-  }
-
-  queuedVideoMessage = (videoId) => {
-    const KEY = 'AIzaSyD2yIRUZp5tQxt8o06cIRuGgKTJbNksNjA';
-    axios.get('https://www.googleapis.com/youtube/v3/videos', {
-      params: {
-          id: videoId,
-          part: 'snippet',
-          key: KEY
-      }
-    })
-    .then(res => {
-      const videoData = res.data.items[0];
-      if (videoData) {
-        const message = {
-          mess: videoData.snippet.title,
-          name: 'Enqueue'
-        }
-        this.socket.emit('enqueueMessage', message);
-      }
-    })
-  }
-
-  componentWillUnmount = () => {
-    this.socket.disconnect();
+    if (this.props.roomId > 0) {
+      this.joinLobby();
+      this.setVideoPlayerMessage('!help for all commands', 'System', '');
+    } else {
+      window.location.replace('/watch');
+    }
   }
 
   joinLobby = () => {
@@ -182,25 +129,21 @@ class Lobby extends Component {
         password: localStorage.getItem('password')
       })
       .then(res => {
-        //join lobby
-        this.storeLobbyInfo(res.data.exists, res.data.lobby);
+        if (res.data.exists) {
+          this.joinChatLobby();
+          const lobby = res.data.lobby;
+          this.setState((prevState) => ({
+            lobby,
+            videoIds: lobby.VideoIds,
+            startTime: lobby.StartTime
+          }));
+        } else {
+          window.location.replace('/watch');
+        }
       })
       .catch(error => {
         console.error(error)
       })
-  }
-
-  storeLobbyInfo = (exists, lobby) => {
-    if (exists) {
-      this.joinChatLobby();
-      this.setState((prevState) => ({
-        lobby: lobby,
-        videoIds: lobby.VideoIds,
-        startTime: lobby.StartTime
-      }));
-    } else {
-      window.location.replace('/watch');
-    }
   }
 
   joinChatLobby = () => {
@@ -216,27 +159,31 @@ class Lobby extends Component {
     this.socket.emit('joinRoom', (joinInfo));
   }
 
-  skipVideo = () => {
-    if (this.state.videoIds.length > 0) {
-      this.deleteWatchedId();
-    }
+  onChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
   }
 
-  deleteWatchedId = () => {
-    axios.delete('http://localhost:8080/lobbys/video', {params: { roomId: this.props.match.params.roomId, videoId: this.state.videoIds[0] }})
-      .then(res => {
-        this.socket.emit('getNextYoutubeData');
-      })
-      .catch(error => {
-        console.error(error)
-      })
+  onLeaveClick = () => {
+    this.socket.disconnect();
+    window.location.replace('/watch');
+  }
+
+  componentWillUnmount = () => {
+    this.socket.disconnect();
   }
 
   toggleChat = (type) => {
     this.setState({ chatType: type });
     setTimeout(() => {
         this.scrollToBottom()
-    }, 0)
+    }, 0);
+  }
+
+  scrollToBottom = () => {
+    let scrollElement = document.getElementsByClassName("chat-list");
+    if (scrollElement[0]) {
+      scrollElement[0].scrollTop = scrollElement[0].scrollHeight;
+    }
   }
 
   chatMessage = (event) => {
@@ -303,14 +250,6 @@ class Lobby extends Component {
     this.setVideoPlayerMessage(message, 'System', '');
   }
 
-  chatChange = (event) => {
-    this.setState({ chatInput: event.target.value});
-  }
-
-  onSearchChange = (event) => {
-    this.setState({ searchValue: event.target.value});
-  }
-
   onSearchKeyPress = (event) => {
     if (event.key === 'Enter') {
       const KEY = 'AIzaSyD2yIRUZp5tQxt8o06cIRuGgKTJbNksNjA';
@@ -337,6 +276,57 @@ class Lobby extends Component {
     }
   }
 
+  getSearchData = (searchValue) => {
+    const KEY = 'AIzaSyD2yIRUZp5tQxt8o06cIRuGgKTJbNksNjA';
+    axios.get('https://www.googleapis.com/youtube/v3/search', {
+      params: {
+          q: searchValue,
+          part: 'snippet',
+          maxResults: 1,
+          key: KEY
+      }
+    })
+    .then(res => {
+      if (res.data.items[0] !== null) {
+        this.setYoutubeData(res.data.items[0].id.videoId);
+      } else {
+        this.setVideoPlayerMessage('Try searching for something else!', 'No Videos Found', '');
+      }
+    })
+  }
+
+  setYoutubeData = (videoId) => {
+    axios.post('http://localhost:8080/lobbys/video', { roomId: this.props.match.params.roomId, videoId: videoId })
+      .then(res => {
+        this.socket.emit('getYoutubeData');
+        this.queuedVideoMessage(videoId);
+      })
+      .catch(error => {
+        console.error(error)
+      })
+  }
+
+  queuedVideoMessage = (videoId) => {
+    const KEY = 'AIzaSyD2yIRUZp5tQxt8o06cIRuGgKTJbNksNjA';
+    axios.get('https://www.googleapis.com/youtube/v3/videos', {
+      params: {
+          id: videoId,
+          part: 'snippet',
+          key: KEY
+      }
+    })
+    .then(res => {
+      const videoData = res.data.items[0];
+      if (videoData) {
+        const message = {
+          mess: videoData.snippet.title,
+          name: 'Enqueue'
+        }
+        this.socket.emit('enqueueMessage', message);
+      }
+    })
+  }
+
   setVideoPlayerMessage = (mess, name, time) => {
     const message = {
       mess,
@@ -352,7 +342,9 @@ class Lobby extends Component {
         messages: prevState.messages.concat(message)
       }));
     }
-    window.setTimeout(() => {this.scrollToBottom();}, 10);
+    setTimeout(() => {
+        this.scrollToBottom()
+    }, 0)
   }
 
   onPlay = (event) => {
@@ -382,6 +374,22 @@ class Lobby extends Component {
     this.setState({ startTime: 0 });
   }
 
+  skipVideo = () => {
+    if (this.state.videoIds.length > 0) {
+      this.deleteWatchedId();
+    }
+  }
+
+  deleteWatchedId = () => {
+    axios.delete('http://localhost:8080/lobbys/video', {params: { roomId: this.props.match.params.roomId, videoId: this.state.videoIds[0] }})
+      .then(res => {
+        this.socket.emit('getNextYoutubeData');
+      })
+      .catch(error => {
+        console.error(error)
+      })
+  }
+
   onPause = (event) => {
     this.getCorrectTimestamp(event.target);
   }
@@ -391,11 +399,6 @@ class Lobby extends Component {
     console.log(elapsedTime, this.state.startTime);
     videoPlayer.seekTo(elapsedTime);
     videoPlayer.playVideo();
-  }
-
-  onLeaveClick = () => {
-    this.socket.disconnect();
-    window.location.replace('/watch');
   }
 
   getElapsedTime = (startTime, videoPlayer) => {
@@ -444,7 +447,7 @@ class Lobby extends Component {
           </Menu.Item>
           <Menu.Item>
             <Searchbar
-              onChange={this.onSearchChange}
+              onChange={this.onChange}
               onKeyPress={this.onSearchKeyPress}
               value={this.state.searchValue}
             />
@@ -480,7 +483,7 @@ class Lobby extends Component {
           toggleChat={this.toggleChat}
           chatType={this.state.chatType}
           chatMessage={this.chatMessage}
-          chatChange={this.chatChange}
+          onChange={this.onChange}
           chatInput={this.state.chatInput}
           messages={this.state.messages}
           localMessages={this.state.localMessages}
@@ -491,4 +494,4 @@ class Lobby extends Component {
   }
 }
 
-export default Lobby;
+export default connect(mapStateToProps)(Lobby);

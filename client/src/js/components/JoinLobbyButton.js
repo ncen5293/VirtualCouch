@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import { connect } from "react-redux";
+import { setRoom } from "../actions/Index";
 import { Modal, Button, Input, Message } from 'semantic-ui-react';
 import '../styles/Watch.css';
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setRoom: roomId => dispatch(setRoom(roomId))
+  };
+}
 
 class JoinLobbyButton extends Component {
   constructor(props) {
@@ -19,7 +27,7 @@ class JoinLobbyButton extends Component {
         isPasswordModalOpen: !prevState.isPasswordModalOpen
       }));
     } else {
-      this.props.history.push(`/watch/${lobby.RoomId}`);
+      this.roomRedirect(lobby);
     }
   }
 
@@ -45,13 +53,18 @@ class JoinLobbyButton extends Component {
   onPasswordSubmit = (event) => {
     const lobby = this.props.lobby;
     if (this.state.passwordGuess === lobby.Password) {
-      localStorage.setItem('password', this.state.passwordGuess);
-      this.props.history.push(`/watch/${lobby.RoomId}`);
+      this.roomRedirect(lobby);
     } else {
       this.setState((prevState) => ({
         badGuess: true
       }));
     }
+  }
+
+  roomRedirect = (lobby) => {
+    const roomId = lobby.RoomId;
+    this.props.setRoom(roomId);
+    this.props.history.push(`/watch/${roomId}`);
   }
 
   render() {
@@ -93,4 +106,4 @@ class JoinLobbyButton extends Component {
   }
 }
 
-export default withRouter(JoinLobbyButton);
+export default withRouter(connect(null, mapDispatchToProps)(JoinLobbyButton));

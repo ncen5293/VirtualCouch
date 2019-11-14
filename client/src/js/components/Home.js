@@ -8,7 +8,7 @@ import '../styles/Home.css';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addArticle: username => dispatch(storeUser(username))
+    storeUser: username => dispatch(storeUser(username))
   };
 }
 
@@ -33,7 +33,6 @@ class Home extends Component {
 
   handleSubmit = (event) => {
     const email = this.state.email;
-    const user = this.state.user;
     const password = this.state.password;
     axios.get('http://localhost:8080/users/user', {params: { email, password }})
       .then(res => {

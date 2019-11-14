@@ -1,11 +1,22 @@
 import React, { Component } from 'react';
 import socketIOClient from 'socket.io-client';
+import { connect } from "react-redux";
+import { setRoom } from "../actions/Index";
 import { Icon, Menu, Button } from 'semantic-ui-react';
 import axios from 'axios';
 import ServerBrowser from './ServerBrowser';
-import CreateNameModal from './CreateNameModal';
 import PlayerList from './PlayerList';
 import '../styles/Watch.css';
+
+const mapStateToProps = (state) => {
+  return { username: state.username };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setRoom: roomId => dispatch(setRoom(roomId))
+  };
+}
 
 class LobbiesPage extends Component {
   constructor(props) {
@@ -14,7 +25,6 @@ class LobbiesPage extends Component {
       players: [],
       messages: [],
       lobbyList: [],
-      screenName: '',
       badInfo: false,
       badDesc: '',
       chatType: 'global',
@@ -24,7 +34,6 @@ class LobbiesPage extends Component {
       isCreateLobbyOpen: false,
       lobbyPassword: '',
       lobbyName: '',
-      isRenameModalOpen: false,
       isPasswordModalOpen: false
     }
     this.socket = socketIOClient('http://localhost:8080');
@@ -33,7 +42,6 @@ class LobbiesPage extends Component {
       this.setState((prevState) => ({
         players: roomInfo.players
       }));
-      console.log(roomInfo);
     });
 
     this.socket.on('chatMessage', (message) => {
@@ -45,14 +53,12 @@ class LobbiesPage extends Component {
 
     this.socket.on('updateLobbyList', () => {
       this.getLobbies();
-      console.log('update lobby list');
     })
   }
 
   getLobbies = async () => {
     await axios.get('http://localhost:8080/lobbys/lobby', {params: { roomId: '' }})
       .then(res => {
-        console.log(res.data);
         this.setState({ lobbyList: res.data.lobbies });
       })
       .catch(error => {
@@ -61,9 +67,8 @@ class LobbiesPage extends Component {
   }
 
   componentDidMount = () => {
-    localStorage.removeItem('password');
     const joinInfo = {
-      screenName: localStorage.getItem('screenName'),
+      screenName: this.props.username,
       roomName: 'world'
     }
     this.socket.emit('joinRoom', (joinInfo));
@@ -77,46 +82,6 @@ class LobbiesPage extends Component {
     this.setState((prevState) => ({
       lobbyList: []
     }));
-  }
-
-  onNameModalClose = () => {
-    const screenName = this.state.screenName;
-    const players = this.state.players;
-    let nameInUse = false;
-    if (screenName.length >= 3 && screenName.length <= 20) {
-      players.forEach((player) => {
-        console.log(player);
-        if (player === screenName) {
-          nameInUse = true;
-          this.setState({ badInfo: true, badDesc: 'Name is already in use!' });
-        }
-      })
-      if (!nameInUse) {
-        this.setState({ badInfo: false, isRenameModalOpen: false });
-        localStorage.setItem('screenName', screenName);
-        this.socket.emit('updatePlayerName', localStorage.getItem('screenName'));
-      }
-    } else {
-      this.setState({ badInfo: true, badDesc: 'Name needs to be between 3-20 characters!' });
-    }
-  }
-
-  onSubmitName = () => {
-    this.onNameModalClose();
-  }
-
-  onCancelNameClick = () => {
-    this.props.history.goBack();
-  }
-
-  onNameChange = (event) => {
-    this.setState({screenName: event.target.value});
-  }
-
-  onNameSubmit = (event) => {
-    if (event.key === 'Enter') {
-      this.onNameModalClose();
-    }
   }
 
   toggleChat = (type) => {
@@ -137,10 +102,6 @@ class LobbiesPage extends Component {
     }
   }
 
-  chatChange = (event) => {
-    this.setState({ chatInput: event.target.value});
-  }
-
   scrollToBottom = () => {
     let scrollElement = document.getElementsByClassName("chat-list");
     if (scrollElement[0]) {
@@ -148,26 +109,12 @@ class LobbiesPage extends Component {
     }
   }
 
-  onLobbiesCheckChange = () => {
-    this.setState((prevState) => ({
-      hideFullLobbies: !prevState.hideFullLobbies
-    }));
-  }
-
-  onFilterKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      this.setState({ filterInput: '' })
-    }
-  }
-
-  onFilterChange = (event) => {
-    this.setState({ filterInput: event.target.value});
-  }
-
   createLobby = (lobbyInfo) => {
     axios.post('http://localhost:8080/lobbys/lobby', { lobbyInfo })
       .then(res => {
-        this.props.history.push(`/watch/${res.data.newLobby.RoomId}`);
+        const roomId = res.data.newLobby.RoomId;
+        this.props.setRoom(roomId);
+        this.props.history.push(`/watch/${roomId}`);
       })
       .catch(error => {
         console.error(error)
@@ -178,11 +125,7 @@ class LobbiesPage extends Component {
     const lobbyInfo = {
       name: this.state.lobbyName,
       password: this.state.lobbyPassword,
-      host: localStorage.getItem('screenName'),
-      users: localStorage.getItem('screenName')
-    }
-    if (lobbyInfo.password.length > 0) {
-      localStorage.setItem('password', lobbyInfo.password);
+      host: this.props.username
     }
     this.createLobby(lobbyInfo);
   }
@@ -193,83 +136,48 @@ class LobbiesPage extends Component {
     }));
   }
 
-  onPasswordChange = (event) => {
-    this.setState({ lobbyPassword: event.target.value});
-  }
-
-  onLobbyNameChange = (event) => {
-    this.setState({ lobbyName: event.target.value});
-  }
-
-  toggleRenameModal = (event) => {
-    this.setState((prevState) => ({
-      isRenameModalOpen: !prevState.isRenameModalOpen
-    }));
+  onChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value});
   }
 
   render() {
-    const hasSetName = localStorage.getItem('screenName') !== null;
+    const username = this.props.username;
     return (
       <div className='App-header browser-page'>
         <Menu widths={3}>
           <Menu.Item>
-            <Button primary onClick={() => {this.props.history.push('/')} }>Home Page</Button>
+            <Button primary onClick={() => {this.props.history.push('/')} }>Log-out</Button>
           </Menu.Item>
           <Menu.Item>
             <h2>
-              Nicky Cen
-              <a href='https://www.linkedin.com/in/nicky-cen/'>
-                <Icon link name='linkedin' />
-              </a>
-              <a href='https://github.com/ncen5293'>
-                <Icon link name='github' />
-              </a>
+              Welcome {username}
             </h2>
           </Menu.Item>
           <Menu.Item>
-            <Button secondary onClick={() => {this.props.history.push('/comments')} }>Comments Page</Button>
+            <Button secondary onClick={() => {this.props.history.push('/profile')} }>Profile</Button>
           </Menu.Item>
         </Menu>
         <ServerBrowser
           lobbyList={this.state.lobbyList}
-          hideFullLobbies={this.state.hideFullLobbies}
-          onLobbiesCheckChange={this.onLobbiesCheckChange}
           filterInput={this.state.filterInput}
-          onFilterKeyPress={this.onFilterKeyPress}
-          onFilterChange={this.onFilterChange}
+          onChange={this.onChange}
+          onLobbyCreateToggle={this.onLobbyCreateToggle}
           isCreateLobbyOpen={this.state.isCreateLobbyOpen}
           onSubmitLobby={this.onSubmitLobby}
-          onLobbyCreateToggle={this.onLobbyCreateToggle}
-          onPasswordChange={this.onPasswordChange}
-          onLobbyNameChange={this.onLobbyNameChange}
-          toggleRenameModal={this.toggleRenameModal}
         />
         <PlayerList
           players={this.state.players}
           toggleChat={this.toggleChat}
           chatType={this.state.chatType}
           chatMessage={this.chatMessage}
-          chatChange={this.chatChange}
+          onChange={this.onChange}
           chatInput={this.state.chatInput}
           messages={this.state.messages}
           inLobby={false}
-        />
-        <CreateNameModal
-          open={!hasSetName}
-          rename={this.state.isRenameModalOpen}
-          screenName={this.state.screenName}
-          onNameChange={this.onNameChange}
-          onNameSubmit={this.onNameSubmit}
-          onClose={this.onNameModalClose}
-          onSubmitName={this.onSubmitName}
-          onCancelNameClick={this.onCancelNameClick}
-          badInfo={this.state.badInfo}
-          badDesc={this.state.badDesc}
-          toggleRenameModal={this.toggleRenameModal}
         />
       </div>
     )
   }
 }
 
-export default LobbiesPage;
+export default connect(mapStateToProps, mapDispatchToProps)(LobbiesPage);

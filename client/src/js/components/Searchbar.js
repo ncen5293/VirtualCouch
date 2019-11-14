@@ -11,6 +11,7 @@ class Searchbar extends Component {
         onChange={this.props.onChange}
         onKeyPress={this.props.onKeyPress}
         value={this.props.value}
+        name='searchValue'
       />
     )
   }

@@ -9,10 +9,7 @@ class ServerBrowser extends Component {
       <div className='server-browser'>
         <ServerListFilter
           filterInput={this.props.filterInput}
-          onFilterChange={this.props.onFilterChange}
-          onFilterKeyPress={this.props.onFilterKeyPress}
-          onLobbyNameChange={this.props.onLobbyNameChange}
-          onPasswordChange={this.props.onPasswordChange}
+          onChange={this.props.onChange}
           onLobbyCreateToggle={this.props.onLobbyCreateToggle}
           onSubmitLobby={this.props.onSubmitLobby}
           isCreateLobbyOpen={this.props.isCreateLobbyOpen}

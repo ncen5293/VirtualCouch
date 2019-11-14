@@ -83,8 +83,9 @@ class PlayerList extends Component {
               size='mini'
               icon='chat'
               placeholder='Chat'
+              name='chatInput'
               style={{'width': '95%'}}
-              onChange={this.props.chatChange}
+              onChange={this.props.onChange}
               onKeyPress={this.props.chatMessage}
               value={this.props.chatInput}
             />
@@ -136,8 +137,9 @@ class PlayerList extends Component {
               size='mini'
               icon='chat'
               placeholder='Chat'
+              name='chatInput'
               style={{'width': '95%'}}
-              onChange={this.props.chatChange}
+              onChange={this.props.onChange}
               onKeyPress={this.props.chatMessage}
               value={this.props.chatInput}
             />

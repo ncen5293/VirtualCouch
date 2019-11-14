@@ -15,13 +15,15 @@ class CreateLobby extends Component {
           <Modal.Content>
             <Input
               placeholder='Lobby Name'
+              name='lobbyName'
               style={{'width': '100%'}}
-              onChange={this.props.onLobbyNameChange}
+              onChange={this.props.onChange}
             />
             <Input
               placeholder='Password (Optional)'
+              name='lobbyPassword'
               style={{'width': '100%'}}
-              onChange={this.props.onPasswordChange}
+              onChange={this.props.onChange}
             />
           </Modal.Content>
           <Modal.Actions>

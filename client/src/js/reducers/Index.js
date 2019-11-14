@@ -1,11 +1,11 @@
-import { ADD_ARTICLE, DATA_LOADED, STORE_USER } from "../constants/action-types";
+import { ADD_ARTICLE, DATA_LOADED, STORE_USER, SET_ROOM } from "../constants/action-types";
 
 const initialState = {
   articles: [],
   remoteArticles: [],
   loggedIn: false,
   username: '',
-  currentRoom: 0
+  roomId: 0
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -24,6 +24,12 @@ const rootReducer = (state = initialState, action) => {
   if (action.type === STORE_USER) {
     return Object.assign({}, state, {
       username: action.payload
+    });
+  }
+
+  if (action.type === SET_ROOM) {
+    return Object.assign({}, state, {
+      roomId: action.payload
     });
   }
   return state;
