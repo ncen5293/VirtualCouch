@@ -1,4 +1,4 @@
-import { ADD_ARTICLE, DATA_LOADED } from "../constants/action-types";
+import { ADD_ARTICLE, DATA_LOADED, STORE_USER } from "../constants/action-types";
 
 const initialState = {
   articles: [],
@@ -18,6 +18,12 @@ const rootReducer = (state = initialState, action) => {
   if (action.type === DATA_LOADED) {
     return Object.assign({}, state, {
       remoteArticles: state.remoteArticles.concat(action.payload)
+    });
+  }
+
+  if (action.type === STORE_USER) {
+    return Object.assign({}, state, {
+      username: action.payload
     });
   }
   return state;

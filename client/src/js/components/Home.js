@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
+import { storeUser } from "../actions/Index";
 import axios from 'axios';
 import { Message, Segment, Header } from 'semantic-ui-react';
 import LoginForm from './LoginForm';
 import '../styles/Home.css';
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addArticle: username => dispatch(storeUser(username))
+  };
+}
 
 class Home extends Component {
   constructor(props) {
@@ -65,7 +72,8 @@ class Home extends Component {
   }
 
   loginRedirect = () => {
-    //put data into redux
+    const username = this.state.user;
+    this.props.storeUser({ username });
     this.props.history.push('/watch');
   }
 
@@ -104,4 +112,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default connect(null, mapDispatchToProps)(Home);

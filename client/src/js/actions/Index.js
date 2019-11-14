@@ -1,4 +1,8 @@
-import { ADD_ARTICLE } from "../constants/action-types";
+import { ADD_ARTICLE, STORE_USER } from "../constants/action-types";
+
+export const storeUser = (payload) => {
+  return { type: 'STORE_USER', payload };
+}
 
 export const addArticle = (payload) => {
   return { type: "ADD_ARTICLE", payload }
