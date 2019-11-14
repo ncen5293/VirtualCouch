@@ -339,13 +339,9 @@ class Lobby extends Component {
       time
     }
     if (this.state.chatType === 'chat') {
-      this.setState((prevState) => ({
-        localMessages: prevState.localMessages.concat(message)
-      }));
+      this.props.getLocalMessage(message);
     } else {
-      this.setState((prevState) => ({
-        messages: prevState.messages.concat(message)
-      }));
+      this.props.getMessage(message);
     }
     setTimeout(() => {
         this.scrollToBottom()

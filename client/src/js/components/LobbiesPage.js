@@ -10,7 +10,7 @@ import '../styles/Watch.css';
 
 const mapStateToProps = (state) => {
   return {
-    lobbyList: state.lobbyList,
+    lobbies: state.lobbies,
     players: state.players,
     messages: state.messages
   };
@@ -18,7 +18,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getRooms: lobbyList => dispatch(getRooms(lobbyList)),
+    getRooms: lobbies => dispatch(getRooms(lobbies)),
     getUsers: players => dispatch(getUsers(players)),
     getMessage: messages => dispatch(getMessage(messages))
   };
@@ -102,7 +102,7 @@ class LobbiesPage extends Component {
     axios.post('http://localhost:8080/lobbys/lobby', { lobbyInfo })
       .then(res => {
         const roomId = res.data.newLobby.RoomId;
-        this.props.setRoom(roomId);
+        localStorage.setItem('roomId', roomId)
         this.props.history.push(`/watch/${roomId}`);
       })
       .catch(error => {
@@ -146,7 +146,7 @@ class LobbiesPage extends Component {
           </Menu.Item>
         </Menu>
         <ServerBrowser
-          lobbyList={this.props.lobbyList}
+          lobbyList={this.props.lobbies}
           filterInput={this.state.filterInput}
           onChange={this.onChange}
           onLobbyCreateToggle={this.onLobbyCreateToggle}

@@ -64,6 +64,7 @@ router.get("/user", (req,res) => {
       if (!user || (user && user.password !== req.query.password)) {
         res.send({ exists: false });
       } else if (user && user.password === req.query.password) {
+        console.log(user);
         res.send({ username: user.username, exists: true });
       }
   });

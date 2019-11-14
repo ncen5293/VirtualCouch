@@ -6,7 +6,7 @@ const initialState = {
   loggedIn: false,
   username: '',
   roomId: 0,
-  lobbyList: [],
+  lobbies: [],
   players: [],
   messages: [],
   localMessages: []
@@ -21,13 +21,13 @@ const rootReducer = (state = initialState, action) => {
 
   if (action.type === GET_ROOMS) {
     return Object.assign({}, state, {
-      lobbyList: action.payload
+      lobbies: action.payload.lobbies
     });
   }
 
   if (action.type === GET_USERS) {
     return Object.assign({}, state, {
-      lobbyList: action.payload
+      players: action.payload
     });
   }
 

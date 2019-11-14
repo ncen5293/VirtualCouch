@@ -35,8 +35,8 @@ class LoginForm extends Component {
                 value={this.props.password}
                 onChange={this.props.handleChange}
               />
-              <Button basic onClick={this.props.changeTab}>Sign-Up</Button>
               <Button primary onClick={this.props.handleSubmit}>Log-In</Button>
+              <Button basic onClick={this.props.changeTab}>Sign-Up</Button>
             </Form>
           </Segment>
         </div>
@@ -68,8 +68,8 @@ class LoginForm extends Component {
                 value={this.props.password}
                 onChange={this.props.handleChange}
               />
-              <Button basic onClick={this.props.changeTab}>Log-In</Button>
               <Button primary onClick={this.props.registerSubmit}>Sign-Up</Button>
+              <Button basic onClick={this.props.changeTab}>Log-In</Button>
             </Form>
           </Segment>
         </div>

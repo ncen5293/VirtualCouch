@@ -21,7 +21,7 @@ export const getRooms = () => {
   return (dispatch) => {
     return axios.get('http://localhost:8080/lobbys/lobby', {params: { roomId: '' }})
       .then(res => {
-        dispatch({ type: GET_ROOMS, payload: res });
+        dispatch({ type: GET_ROOMS, payload: res.data });
       })
       .catch(error => {
         console.error(error)

@@ -29,6 +29,7 @@ class Home extends Component {
     axios.get('http://localhost:8080/users/user', {params: { email, password }})
       .then(res => {
         if (res.data.exists) {
+          console.log(res.data);
           this.loginRedirect(res.data.username);
         } else {
           this.setState({ error: true, errorReason: 'This account doesn\'t exist!' });
@@ -41,18 +42,19 @@ class Home extends Component {
 
   registerSubmit = (event) => {
     const email = this.state.email;
-    const user = this.state.user;
+    const username = this.state.user;
     const password = this.state.password;
-    if (user.length < 5) {
+    if (username.length < 5) {
       this.setState({ error: true, errorReason: 'The username is too short!' });
     } else if (password.length < 5) {
       this.setState({ error: true, errorReason: 'The password is too short!' });
     } else {
-      axios.post('http://localhost:8080/users/user', { email, user, password })
+      axios.post('http://localhost:8080/users/user', { email, username, password })
         .then(res => {
           if (res.data.error) {
             this.setState({ error: true, errorReason: 'E-mail or username is already in use!' });
           } else {
+            console.log(res.data);
             this.loginRedirect(res.data.username);
           }
         })
