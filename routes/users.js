@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
 
 let databaseConnection = "Waiting for Database response...";
 
@@ -27,32 +28,34 @@ const UserModel = mongoose.model('user', UserSchema);
 router.post("/user", (req,res) => {
   let newUser = {
     email: req.body.email,
-    username: req.body.username,
-    password: req.body.password
+    username: req.body.username
   };
-  console.log(newUser);
-  UserModel.findOne({
-      $or: [
-        {email: req.body.email},
-        {username: req.body.username}]
-    },
-    (err, user) => {
-      if (err) {
-        console.log(err);
-      }
-      if (!user) {
-        newUser._id = mongoose.Types.ObjectId();
-        let newUserModel = new UserModel(newUser);
-        newUserModel.save((err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-        res.send({ username: newUser.username, error: false });
-      } else {
-        res.send({ error: true });
-      }
-    });
+  const salt = (newUser.username[0].charCodeAt() % 20) + 5;
+  bcrypt.hash(req.body.password, salt, (err, passwordHash) => {
+    UserModel.findOne({
+        $or: [
+          {email: req.body.email},
+          {username: req.body.username}]
+      },
+      (err, user) => {
+        if (err) {
+          console.log(err);
+        }
+        if (!user) {
+          newUser._id = mongoose.Types.ObjectId();
+          newUser.password = passwordHash;
+          let newUserModel = new UserModel(newUser);
+          newUserModel.save((err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+          res.send({ username: newUser.username, error: false });
+        } else {
+          res.send({ error: true });
+        }
+      });
+  }
 })
 
 router.get("/user", (req,res) => {
@@ -61,11 +64,16 @@ router.get("/user", (req,res) => {
       if (err) {
         console.log(err);
       }
-      if (!user || (user && user.password !== req.query.password)) {
+      if (!user) {
         res.send({ exists: false });
-      } else if (user && user.password === req.query.password) {
-        console.log(user);
-        res.send({ username: user.username, exists: true });
+      } else {
+        bcrypt.compare(user.password, req.query.password, (err, correct) => {
+          if (correct) {
+            res.send({ username: user.username, exists: true });
+          } else {
+            res.send({ exists: false });
+          }
+        })
       }
   });
 })

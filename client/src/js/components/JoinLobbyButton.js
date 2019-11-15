@@ -44,13 +44,19 @@ class JoinLobbyButton extends Component {
   //placeholder until check is in backend instead
   onPasswordSubmit = (event) => {
     const lobby = this.props.lobby;
-    if (this.state.passwordGuess === lobby.Password) {
-      this.roomRedirect(lobby);
-    } else {
-      this.setState((prevState) => ({
-        badGuess: true
-      }));
-    }
+    axios.get('http://localhost:8080/lobbys/password', {params: { roomId: lobby.roomId }})
+      .then(res => {
+        if (!res.data.error) {
+          this.roomRedirect(lobby);
+        } else {
+          this.setState((prevState) => ({
+            badGuess: true
+          }));
+        }
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
   roomRedirect = (lobby) => {

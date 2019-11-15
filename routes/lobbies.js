@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
 
 let databaseConnection = "Waiting for Database response...";
 
@@ -32,30 +33,32 @@ router.post("/lobby", (req,res) => {
   console.log('creating new lobby');
   let newLobby = {
     Name: req.body.lobbyInfo.name,
-    Password: req.body.lobbyInfo.password,
     Host: req.body.lobbyInfo.host,
     Users: [],
     VideoIds: [],
     StartTime: 0
   };
-  console.log(newLobby);
-  LobbyModel.findOne(
-    {}, {}, { sort: { 'created_at' : -1 }},
-    (err, lobby) => {
-      if (lobby) {
-        newLobby.RoomId = lobby.RoomId + 1;
-      } else {
-        newLobby.RoomId = 1;
-      }
-      newLobby._id = mongoose.Types.ObjectId();
-      let newLobbyModel = new LobbyModel(newLobby);
-      newLobbyModel.save((err) => {
-        if (err) {
-          console.log(err);
+  const salt = (newLobby.Host[0].charCodeAt() % 20) + 5;
+  bcrypt.hash(req.body.lobbyInfo.password, salt, (err, passwordHash) => {
+    LobbyModel.findOne(
+      {}, {}, { sort: { 'created_at' : -1 }},
+      (err, lobby) => {
+        if (lobby) {
+          newLobby.RoomId = lobby.RoomId + 1;
+        } else {
+          newLobby.RoomId = 1;
         }
-      });
-      res.send({ newLobby });
-  });
+        newLobby._id = mongoose.Types.ObjectId();
+        newLobby.Password = passwordHash;
+        let newLobbyModel = new LobbyModel(newLobby);
+        newLobbyModel.save((err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+        res.send({ newLobby });
+    });
+  })
 })
 
 router.put("/lobby", (req,res) => {
@@ -74,7 +77,7 @@ router.put("/lobby", (req,res) => {
       } else if (req.body.reason === 'join') {
         lobby.Users.push(req.body.user);
         console.log(lobby);
-        saveLobby(lobby,res);
+        saveLobby(lobby, res);
       } else if (lobby.Users.length === 1) {
         deleteLobby(req.body.roomId, res);
       } else {
@@ -119,7 +122,6 @@ router.delete("/lobby", (req,res) => {
 })
 
 router.get("/lobby", (req,res) => {
-  console.log(req.query);
   const roomId = req.query.roomId;
   if (roomId.length > 0) {
     LobbyModel.findOne({ "RoomId": req.query.roomId },
@@ -142,6 +144,28 @@ router.get("/lobby", (req,res) => {
         res.send({ lobbies });
     });
   }
+})
+
+router.get("/lobby/password", (req,res) => {
+  console.log(req.query);
+  const roomId = req.query.roomId;
+  LobbyModel.findOne({ "RoomId": req.query.roomId },
+    (err, lobby) => {
+      if (err) {
+        console.log(err);
+      }
+      if (!lobby) {
+        res.send({ lobby, error: true });
+      } else {
+        bcrypt.compare(user.password, req.query.password, (err, correct) => {
+          if (correct) {
+            res.send({ error: false });
+          } else {
+            res.send({ error: true });
+          }
+        })
+      }
+  });
 })
 
 router.get("/video", (req,res) => {
