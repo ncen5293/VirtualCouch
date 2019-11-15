@@ -30,8 +30,9 @@ router.post("/user", (req,res) => {
     email: req.body.email,
     username: req.body.username
   };
-  const salt = (newUser.username[0].charCodeAt() % 20) + 5;
+  const salt = (newUser.username[0].charCodeAt() % 5) + 5;
   bcrypt.hash(req.body.password, salt, (err, passwordHash) => {
+    console.log(passwordHash);
     UserModel.findOne({
         $or: [
           {email: req.body.email},
@@ -55,7 +56,7 @@ router.post("/user", (req,res) => {
           res.send({ error: true });
         }
       });
-  }
+  })
 })
 
 router.get("/user", (req,res) => {
@@ -67,10 +68,11 @@ router.get("/user", (req,res) => {
       if (!user) {
         res.send({ exists: false });
       } else {
-        bcrypt.compare(user.password, req.query.password, (err, correct) => {
+        bcrypt.compare(req.query.password, user.password, (err, correct) => {
           if (correct) {
             res.send({ username: user.username, exists: true });
           } else {
+            console.log(req.query, user);
             res.send({ exists: false });
           }
         })

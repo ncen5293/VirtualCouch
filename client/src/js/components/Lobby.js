@@ -117,7 +117,9 @@ class Lobby extends Component {
   }
 
   componentDidMount = () => {
-    if (localStorage.getItem('roomId') === this.props.match.params.roomId) {
+    if (localStorage.getItem('loggedIn') !== 'true') {
+      this.props.history.push('/');
+    } else if (localStorage.getItem('roomId') === this.props.match.params.roomId) {
       this.joinLobby();
       this.setVideoPlayerMessage('!help for all commands', 'System', '');
     } else {
@@ -129,9 +131,8 @@ class Lobby extends Component {
     axios.put('http://localhost:8080/lobbys/lobby',
       {
         roomId: this.props.match.params.roomId,
-        user: localStorage.getItem('screenName'),
-        reason: 'join',
-        password: localStorage.getItem('password')
+        user: localStorage.getItem('username'),
+        reason: 'join'
       })
       .then(res => {
         if (res.data.exists) {

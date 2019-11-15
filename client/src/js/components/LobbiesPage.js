@@ -56,14 +56,18 @@ class LobbiesPage extends Component {
   }
 
   componentDidMount = () => {
-    const joinInfo = {
-      screenName: localStorage.getItem('username'),
-      roomName: 'world'
+    if (localStorage.getItem('loggedIn') !== 'true') {
+      this.props.history.push('/');
+    } else {
+      const joinInfo = {
+        screenName: localStorage.getItem('username'),
+        roomName: 'world'
+      }
+      this.socket.emit('joinRoom', (joinInfo));
+      window.setTimeout(() => {
+        this.props.getRooms();
+      }, 10);
     }
-    this.socket.emit('joinRoom', (joinInfo));
-    window.setTimeout(() => {
-      this.props.getRooms();
-    }, 10);
   }
 
   componentWillUnmount = () => {
@@ -114,7 +118,7 @@ class LobbiesPage extends Component {
     const lobbyInfo = {
       name: this.state.lobbyName,
       password: this.state.lobbyPassword,
-      host: this.props.username
+      host: localStorage.getItem('username')
     }
     this.createLobby(lobbyInfo);
   }
@@ -129,12 +133,17 @@ class LobbiesPage extends Component {
     this.setState({ [event.target.name]: event.target.value});
   }
 
+  onLogoutClick = () => {
+    localStorage.removeItem('loggedIn');
+    this.props.history.push('/');
+  }
+
   render() {
     return (
       <div className='App-header browser-page'>
         <Menu widths={3}>
           <Menu.Item>
-            <Button primary onClick={() => {this.props.history.push('/')} }>Log-out</Button>
+            <Button primary onClick={this.onLogoutClick}>Log-out</Button>
           </Menu.Item>
           <Menu.Item>
             <h2>
@@ -142,7 +151,7 @@ class LobbiesPage extends Component {
             </h2>
           </Menu.Item>
           <Menu.Item>
-            <Button secondary onClick={() => {this.props.history.push('/profile')} }>Profile</Button>
+            <Button secondary onClick={this.onLogoutClick}>Profile</Button>
           </Menu.Item>
         </Menu>
         <ServerBrowser

@@ -38,7 +38,7 @@ router.post("/lobby", (req,res) => {
     VideoIds: [],
     StartTime: 0
   };
-  const salt = (newLobby.Host[0].charCodeAt() % 20) + 5;
+  const salt = (newLobby.Host[0].charCodeAt() % 5) + 5;
   bcrypt.hash(req.body.lobbyInfo.password, salt, (err, passwordHash) => {
     LobbyModel.findOne(
       {}, {}, { sort: { 'created_at' : -1 }},
@@ -68,11 +68,7 @@ router.put("/lobby", (req,res) => {
       if (err) {
         console.log(err);
       }
-      console.log(lobby.Password, req.body.password);
       if (!lobby) {
-        res.send({ exists: false });
-      } else if (lobby.Password.length > 0 && lobby.Password !== req.body.password) {
-        console.log(lobby.Password, req.body.password);
         res.send({ exists: false });
       } else if (req.body.reason === 'join') {
         lobby.Users.push(req.body.user);
@@ -147,7 +143,7 @@ router.get("/lobby", (req,res) => {
 })
 
 router.get("/lobby/password", (req,res) => {
-  console.log(req.query);
+  console.log(req.query, req.query.roomId);
   const roomId = req.query.roomId;
   LobbyModel.findOne({ "RoomId": req.query.roomId },
     (err, lobby) => {
@@ -157,7 +153,8 @@ router.get("/lobby/password", (req,res) => {
       if (!lobby) {
         res.send({ lobby, error: true });
       } else {
-        bcrypt.compare(user.password, req.query.password, (err, correct) => {
+        bcrypt.compare(req.query.password, lobby.Password, (err, correct) => {
+          console.log(req.query, lobby)
           if (correct) {
             res.send({ error: false });
           } else {

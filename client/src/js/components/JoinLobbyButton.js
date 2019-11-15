@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
+import axios from 'axios';
 import { Modal, Button, Input, Message } from 'semantic-ui-react';
 import '../styles/Watch.css';
 
@@ -41,10 +42,10 @@ class JoinLobbyButton extends Component {
     }
   }
 
-  //placeholder until check is in backend instead
   onPasswordSubmit = (event) => {
     const lobby = this.props.lobby;
-    axios.get('http://localhost:8080/lobbys/password', {params: { roomId: lobby.roomId }})
+    console.log(lobby);
+    axios.get('http://localhost:8080/lobbys/lobby/password', {params: { password: this.state.passwordGuess, roomId: lobby.RoomId }})
       .then(res => {
         if (!res.data.error) {
           this.roomRedirect(lobby);

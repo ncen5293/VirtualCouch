@@ -17,6 +17,12 @@ class Home extends Component {
     }
   }
 
+  componentDidMount = () => {
+    if (localStorage.getItem('loggedIn') === 'true') {
+      this.props.history.push('/watch');
+    }
+  }
+
   handleChange = (event) => {
     this.setState({
       [event.target.id]: event.target.value
@@ -66,6 +72,7 @@ class Home extends Component {
 
   loginRedirect = (user) => {
     localStorage.setItem('username', user);
+    localStorage.setItem('loggedIn', 'true');
     this.props.history.push('/watch');
   }
 
