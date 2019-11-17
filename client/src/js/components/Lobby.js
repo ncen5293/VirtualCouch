@@ -372,6 +372,7 @@ class Lobby extends Component {
   }
 
   onEnd = (event) => {
+    this.state.videoPlayer.stopVideo();
     this.deleteWatchedId();
     this.setState({ startTime: 0 });
   }
