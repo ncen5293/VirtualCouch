@@ -434,6 +434,10 @@ class Lobby extends Component {
     }
   }
 
+  onPlaybackRateChange = (event) => {
+    this.state.videoPlayer.setPlaybackRate(1);
+  }
+
   render() {
     let height = window.innerWidth > 1024 ? window.innerHeight * .88 : window.innerHeight * .45;
     let width = window.innerWidth > 1024 ? window.innerWidth * .75 : window.innerWidth;
@@ -478,6 +482,7 @@ class Lobby extends Component {
             onReady={this.onReady}
             onEnd={this.onEnd}
             onPause={this.onPause}
+            onPlaybackRateChange={this.onPlaybackRateChange}
           />
         </div>
         <PlayerList
