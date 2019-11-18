@@ -151,7 +151,7 @@ class LobbiesPage extends Component {
             </h2>
           </Menu.Item>
           <Menu.Item>
-            <Button secondary onClick={this.onLogoutClick}>Profile</Button>
+            <Button secondary onClick={this.onLogoutClick}>Log-out</Button>
           </Menu.Item>
         </Menu>
         <ServerBrowser
