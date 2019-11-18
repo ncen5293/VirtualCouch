@@ -39,7 +39,7 @@ class LobbiesPage extends Component {
       lobbyName: '',
       isPasswordModalOpen: false
     }
-    this.socket = socketIOClient('http://localhost:8080');
+    this.socket = socketIOClient('');
 
     this.socket.on('updateRoom', (roomInfo) => {
       this.props.getUsers(roomInfo.players);
@@ -103,7 +103,7 @@ class LobbiesPage extends Component {
   }
 
   createLobby = (lobbyInfo) => {
-    axios.post('http://localhost:8080/lobbys/lobby', { lobbyInfo })
+    axios.post('/lobbys/lobby', { lobbyInfo })
       .then(res => {
         const roomId = res.data.newLobby.RoomId;
         localStorage.setItem('roomId', roomId)
