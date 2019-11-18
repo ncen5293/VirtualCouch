@@ -288,12 +288,14 @@ class Lobby extends Component {
       params: {
           q: searchValue,
           part: 'snippet',
+          type: 'video',
           maxResults: 1,
           key: KEY
       }
     })
     .then(res => {
       if (res.data.items[0] !== null) {
+        console.log(res.data.items[0])
         this.setYoutubeData(res.data.items[0].id.videoId);
       } else {
         this.setVideoPlayerMessage('Try searching for something else!', 'No Videos Found', '');
