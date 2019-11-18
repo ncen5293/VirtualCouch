@@ -3,14 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 
-let databaseConnection = "Waiting for Database response...";
-
-router.get("/", function(req, res, next) {
-    res.send(databaseConnection);
-});
-
 const connection = mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/portfolio", { useNewUrlParser: true  });
-const database = mongoose.connection;
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
@@ -79,17 +72,6 @@ router.get("/user", (req,res) => {
       }
   });
 })
-
-database.on("error", error => {
-    console.log("Database connection error:", error);
-    databaseConnection = "Error connecting to Database";
-});
-
-// If connected to MongoDB send a success message
-database.once("open", () => {
-    console.log("Connected to Database!");
-    databaseConnection = "Connected to Database";
-});
 
 const userRouter = router;
 module.exports = {
