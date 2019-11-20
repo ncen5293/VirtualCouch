@@ -32,7 +32,7 @@ class Home extends Component {
   handleSubmit = (event) => {
     const email = this.state.email;
     const password = this.state.password;
-    axios.get('http://localhost:8080/users/user', {params: { email, password }})
+    axios.get('/users/user', {params: { email, password }})
       .then(res => {
         if (res.data.exists) {
           console.log(res.data);
@@ -55,7 +55,7 @@ class Home extends Component {
     } else if (password.length < 5) {
       this.setState({ error: true, errorReason: 'The password is too short!' });
     } else {
-      axios.post('http://localhost:8080/users/user', { email, username, password })
+      axios.post('/users/user', { email, username, password })
         .then(res => {
           if (res.data.error) {
             this.setState({ error: true, errorReason: 'E-mail or username is already in use!' });
@@ -88,7 +88,7 @@ class Home extends Component {
       <div className='App-header'>
         <Segment raised>
           <Header as='h1'>
-            Virtual Couch
+            YouTube With Friends
           </Header>
           <Message>
             Watch YouTube videos together and chat with others!

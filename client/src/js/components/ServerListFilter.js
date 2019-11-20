@@ -7,7 +7,7 @@ class ServerListFilter extends Component {
   render() {
     return (
       <div className='server-filter'>
-        <Menu widths={3}>
+        <Menu widths={2}>
           <Menu.Item>
             <Input
               size='mini'
@@ -18,14 +18,6 @@ class ServerListFilter extends Component {
               name='filterInput'
               style={{'width': '90%'}}
             />
-          </Menu.Item>
-          <Menu.Item>
-            <div>
-              <Button icon labelPosition='right' size='mini' onClick={this.props.toggleRenameModal} >
-                Rename
-                <Icon name='edit outline' />
-              </Button>
-            </div>
           </Menu.Item>
           <Menu.Item>
             <CreateLobby
