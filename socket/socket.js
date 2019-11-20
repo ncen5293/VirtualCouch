@@ -110,6 +110,11 @@ io.on('connection', (socket) => {
     io.in(roomName).emit('changeTimestamp');
   })
 
+  socket.on('pauseVideo', () => {
+    const roomName = socket.currentRoom;
+    io.in(roonName).emit('pauseVideo');
+  })
+
   socket.on('disconnect', () => {
     const roomName = socket.currentRoom;
     const user = socket.name;

@@ -97,6 +97,12 @@ class Lobby extends Component {
     this.socket.on('enqueueMessage', (message) => {
       this.setVideoPlayerMessage(message.mess, message.name, '');
     })
+
+    this.socket.on('pauseVideo', () => {
+      if (this.state.videoPlayer) {
+        // this.state.videoPlayer.pause();
+      }
+    })
   }
 
   getVideoIds = () => {
@@ -395,6 +401,8 @@ class Lobby extends Component {
 
   onPause = (event) => {
     this.getCorrectTimestamp(event.target);
+    
+    this.socket.emit('pauseVideo');
   }
 
   getCorrectTimestamp = (videoPlayer) => {

@@ -221,6 +221,27 @@ router.put("/video", (req,res) => {
   });
 })
 
+router.put("/video/:timestamp", (req,res) => {
+  console.log(req.body);
+  LobbyModel.findOne({ "RoomId": req.body.roomId },
+    (err, lobby) => {
+      if (err) {
+        console.log(err);
+      }
+      if (!lobby) {
+        res.send({ exists: false });
+      } else {
+        lobby.StartTime = Date.now() - (req.params.timestamp * 1000);
+        lobby.save((err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+        res.send({ exists: true, lobby });
+      }
+  });
+})
+
 router.delete("/video", (req,res) => {
   console.log(req.query);
   LobbyModel.findOne({ "RoomId": req.query.roomId },
